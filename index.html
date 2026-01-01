@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Webhook Spammer</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: 'Arial', sans-serif;
+        display: flex;
+        min-height: 100vh;
+        flex-direction: column;
+        background: linear-gradient(to right, #ff4b4b, #4b6cff);
+        color: white;
+      }
+
+      .container {
+        display: flex;
+        width: 100%;
+        max-width: 1200px;
+        margin: auto;
+        flex-grow: 1;
+      }
+
+      .left-section {
+        background-color: rgba(255, 75, 75, 0.8);
+        flex: 1;
+        padding: 40px;
+        border-top-left-radius: 20px;
+        border-bottom-left-radius: 20px;
+      }
+
+      .right-section {
+        background-color: rgba(75, 108, 255, 0.8);
+        flex: 1;
+        padding: 40px;
+        border-top-right-radius: 20px;
+        border-bottom-right-radius: 20px;
+      }
+
+      h1 {
+        font-size: 36px;
+        margin-bottom: 20px;
+      }
+
+      .input-group {
+        margin-bottom: 15px;
+      }
+
+      input {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        margin-top: 8px;
+      }
+
+      button {
+        background-color: #ffffff;
+        color: black;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-right: 10px;
+        transition: all 0.3s ease;
+      }
+
+      button:hover {
+        background-color: black;
+        color: white;
+      }
+
+      button:disabled {
+        background-color: gray;
+        cursor: not-allowed;
+      }
+
+      footer {
+        text-align: center;
+        padding: 10px;
+        background-color: rgba(0, 0, 0, 0.3);
+        color: white;
+        font-size: 14px;
+      }
+
+      footer a {
+        color: #ffd700;
+        text-decoration: none;
+      }
+
+      footer a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="left-section">
+        <h1>Discord Webhook Spammer</h1>
+        <div class="input-group">
+          <label for="url">*Webhook URL:</label>
+          <input id="url" placeholder="Enter Webhook URL" />
+        </div>
+        <div class="input-group">
+          <label for="username">Webhook Username:</label>
+          <input id="username" placeholder="Enter Webhook Username" />
+        </div>
+        <div class="input-group">
+          <label for="message">*Message:</label>
+          <input id="message" placeholder="Enter Message to Spam" />
+        </div>
+        <div class="input-group">
+          <label for="avatar">Avatar URL:</label>
+          <input id="avatar" placeholder="Enter Avatar Image URL" />
+        </div>
+        <div class="buttons">
+          <button id="start">Start</button>
+          <button id="stop" disabled>Stop</button>
+        </div>
+      </div>
+
+      <div class="right-section">
+        <h2>Instructions</h2>
+        <p>
+          Enter the Webhook URL and a message to spam. The username and avatar are optional.
+        </p>
+        <ul>
+          <li>Click <strong>Start</strong> to begin spamming messages.</li>
+          <li>Click <strong>Stop</strong> to stop the spam operation.</li>
+          <li>Make sure the Webhook URL is valid to avoid errors.</li>
+        </ul>
+      </div>
+    </div>
+
+    <footer>
+      Made by MarkDev - Check out my YouTube channel: 
+      <a href="https://www.youtube.com/@markdev_yt" target="_blank">MarkDev YouTube</a>
+    </footer>
+
+    <script>
+      document.getElementById("start").addEventListener("click", startSpamming);
+      document.getElementById("stop").addEventListener("click", stopSpamming);
+
+      let isSpamming = false;
+
+      async function startSpamming() {
+        const url = document.getElementById("url").value;
+        const message = document.getElementById("message").value;
+        const username = document.getElementById("username").value || "Spammer";
+        const avatar = document.getElementById("avatar").value;
+
+        if (!url || !message) {
+          alert("Please fill the required fields (Webhook URL and Message).");
+          return;
+        }
+
+        document.getElementById("start").disabled = true;
+        document.getElementById("stop").disabled = false;
+        isSpamming = true;
+
+        while (isSpamming) {
+          const requests = Array(5).fill(
+            fetch(url, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                username: username,
+                avatar_url: avatar,
+                content: message,
+              }),
+            }).catch(error => console.error("Fetch error:", error))
+          );
+
+          await Promise.all(requests);
+          console.log("Batch of messages sent");
+        }
+      }
+
+      function stopSpamming() {
+        isSpamming = false;
+        document.getElementById("start").disabled = false;
+        document.getElementById("stop").disabled = true;
+        console.log("Spamming stopped...");
+      }
+    </script>
+  </body>
+</html>
